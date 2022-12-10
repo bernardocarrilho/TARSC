@@ -49,7 +49,7 @@ class MyTopo( Topo):
             j=j+1 
 
 	
-        proxy = self.addHost('proxy')
+        proxy = self.addHost('proxy', ip = "10.0.0.11/24")
         self.addLink(s2,proxy)
         
                         

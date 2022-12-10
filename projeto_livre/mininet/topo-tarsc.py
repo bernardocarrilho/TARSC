@@ -1,57 +1,58 @@
 """
 
-   host1 ------|
-            switch1------------|
-   host2 ------|               | 
-                             router1--------- host5 (web server)
-   host3 ------|               | 
-            switch2------------|
-   host4 ------|
-
+   host1 --------------|               
+                       |        
+   host2 --------------|                
+                     switch-----------router1--------- host12 (web server)
+   host3 --------------|                  |            host 13
+                       |                  |            host 14
+   host4 --------------|                  |               .
+   .                   |                  |               .
+   .                   |                  |               .
+   .                   |         proxy server (host11)  host 22 
+                       |
+   host10 -------------|
 Adding the 'topos' dict with a key/value pair to generate our newly defined
 topology enables one to pass in '--topo=mytopo' from the command line.
 """
 from mininet.topo import Topo
 
+
 class MyTopo( Topo):
 
    def build( self):
-
-
-        # Add hosts and switches
-
-        h1 = self.addHost( 'h1', ip="10.0.1.10/24", mac="00:00:00:00:00:01" )
-
-        h2 = self.addHost( 'h2', ip="10.0.1.11/24", mac="00:00:00:00:00:02" )
-
-        h3 = self.addHost( 'h3', ip="10.0.2.20/24", mac="00:00:00:00:00:03" )
-
-        h4 = self.addHost( 'h4', ip="10.0.2.21/24", mac="00:00:00:00:00:04" )
-
-        h5 = self.addHost('h5' , ip ="10.0.3.1/24")
-
-        r1 = self.addHost( 'r1')
+        
+        # Add switch and router
 
         s1 = self.addSwitch( 's1')
-
-        s2 = self.addSwitch( 's2')
-
+        s2 = self.addSwitch('s2')
+        j=101
+        # add hosts
+        for i in range(1,11):
+            name = "h%d" % i
+            ip = "10.0.0.%d/24" % j 
+            h = self.addHost(name, ip = ip)
+            self.addLink(h, s1)
+            j=j+1
         
+       
+        self.addLink(s1, s2)
+        j=3
+        for i in range(1,11):
+            name = "w%d" % i
+            ip = "10.0.0.%d/24" % i 
+            switch = "s%d" %j
+            h = self.addHost(name, ip = ip)
+            s = self.addSwitch(switch)
+            self.addLink(s2,h)
+            self.addLink(s, s2)  
+            j=j+1 
 
-        self.addLink( r1, s1 )
-
-        self.addLink( r1, s2 )
-
-        self.addLink( h1, s1 )
-
-        self.addLink( h2, s1 )
-
-        self.addLink( h3, s2 )
-
-        self.addLink( h4, s2 )
-
-        self.addLink( r1, h5)           
-                
+	
+        proxy = self.addHost('proxy')
+        self.addLink(s2,proxy)
+        
+                        
 
 topos = { 'mytopo': ( lambda: MyTopo() ) }
 

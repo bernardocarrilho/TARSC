@@ -1,3 +1,4 @@
 #!/bin/bash
 
-sudo nano /etc/squid/squid.conf
+sudo gedit /etc/squid/squid.conf
+sudo ./restart_squid.sh
